@@ -29,28 +29,28 @@ def run_checks():
         # Silver — sem fixture_id nulo
         {
             "name": "silver.stg_fixtures sem fixture_id nulo",
-            "sql": "SELECT COUNT(*) FROM silver.stg_fixtures WHERE fixture_id IS NULL",
+            "sql": "SELECT COUNT(*) FROM main_silver.stg_fixtures WHERE fixture_id IS NULL",
             "condition": lambda n: n == 0,
             "critical": True,
         },
         # Silver — golos não negativos
         {
             "name": "silver.stg_fixtures golos >= 0",
-            "sql": "SELECT COUNT(*) FROM silver.stg_fixtures WHERE home_goals < 0 OR away_goals < 0",
+            "sql": "SELECT COUNT(*) FROM main_silver.stg_fixtures WHERE home_goals < 0 OR away_goals < 0",
             "condition": lambda n: n == 0,
             "critical": True,
         },
         # Silver — fixture_ids únicos
         {
             "name": "silver.stg_fixtures fixture_id único",
-            "sql": "SELECT COUNT(*) - COUNT(DISTINCT fixture_id) FROM silver.stg_fixtures",
+            "sql": "SELECT COUNT(*) - COUNT(DISTINCT fixture_id) FROM main_silver.stg_fixtures",
             "condition": lambda n: n == 0,
             "critical": False,
         },
         # Gold — todas as equipas têm pontos
         {
             "name": "gold.team_performance sem pontos nulos",
-            "sql": "SELECT COUNT(*) FROM gold.team_performance WHERE points IS NULL",
+            "sql": "SELECT COUNT(*) FROM main_gold.team_performance WHERE points IS NULL",
             "condition": lambda n: n == 0,
             "critical": False,
         },

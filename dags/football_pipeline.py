@@ -70,4 +70,4 @@ with DAG(
 
     # ── ORDEM DE EXECUÇÃO ────────────────────────────────────────────────
     # Ingestões correm em paralelo, depois dbt, depois testes e validação
-    [ingest_fixtures, ingest_standings, ingest_players] >> dbt_run >> dbt_test >> validate_quality
+    ingest_fixtures >> ingest_standings >> ingest_players >> dbt_run >> dbt_test >> validate_quality

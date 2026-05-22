@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: bronze
+    tables:
+      - name: raw_fixtures
+      - name: raw_standings
+      - name: raw_top_scorers
