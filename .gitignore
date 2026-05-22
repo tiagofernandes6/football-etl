@@ -1,0 +1,36 @@
+# Environment
+.env
+*.env
+
+# DuckDB data
+data/
+*.duckdb
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# dbt
+dbt_project/target/
+dbt_project/logs/
+dbt_project/.user.yml
+
+# Airflow
+logs/
+airflow.db
+airflow.cfg
+
+# Great Expectations
+expectations/uncommitted/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

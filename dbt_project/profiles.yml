@@ -1,0 +1,7 @@
+football_etl:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/football.duckdb
+      threads: 4

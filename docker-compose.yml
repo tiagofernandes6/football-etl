@@ -1,0 +1,62 @@
+version: '3.8'
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.8.0-python3.11
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+    _PIP_ADDITIONAL_REQUIREMENTS: "duckdb==0.10.0 dbt-core==1.7.0 dbt-duckdb==1.7.0 requests==2.31.0 python-dotenv==1.0.0 loguru==0.7.2 pandas==2.2.0"
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./:/opt/airflow/project      # monta o projeto inteiro
+    - ./data:/opt/airflow/data     # DuckDB persistente
+  env_file:
+    - .env
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  airflow-init:
+    <<: *airflow-common
+    command: >
+      bash -c "airflow db migrate &&
+               airflow users create --username admin --password admin
+               --firstname Admin --lastname User
+               --role Admin --email admin@example.com"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+
+volumes:
+  postgres_data:
