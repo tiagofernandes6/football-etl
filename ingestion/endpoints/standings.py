@@ -32,8 +32,14 @@ def ingest_standings(league_name: str, league_id: int, season: int):
     logger.success(f"Classificação guardada em bronze: {len(rows)} registos")
 
 
-def ingest_all_standings(season: int):
-    """Ingere classificação para todas as ligas configuradas."""
+def ingest_all_standings(season: int, current_season: int = 2024):
+    """Ingere classificação para todas as ligas configuradas.
+    Épocas históricas (< current_season) são saltadas se já existirem na bronze."""
     client = FootballAPIClient()
+    db = DatabaseManager()
     for league_name, league_id in client.LEAGUES.items():
+        if season < current_season and db.has_data("raw_standings", league_name, season):
+            logger.info(f"Dados já existem para {league_name} {season} — a saltar")
+            continue
         ingest_standings(league_name, league_id, season)
+    db.close()

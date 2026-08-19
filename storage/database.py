@@ -53,6 +53,17 @@ class DatabaseManager:
         )
         logger.info(f"Inseridos {len(rows)} registos em bronze.{table_name}")
 
+    def has_data(self, table_name: str, league_name: str, season: int) -> bool:
+        """Verifica se já existem dados para uma liga/temporada na bronze."""
+        try:
+            result = self.conn.execute(
+                f"SELECT COUNT(*) FROM bronze.{table_name} WHERE league_name = ? AND season = ?",
+                [league_name, season],
+            ).fetchone()
+            return result[0] > 0
+        except Exception:
+            return False
+
     def query(self, sql: str) -> pd.DataFrame:
         """Executa uma query e devolve um DataFrame."""
         return self.conn.execute(sql).df()

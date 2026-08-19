@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 from loguru import logger
 from dotenv import load_dotenv
@@ -48,6 +49,7 @@ class FootballAPIClient:
         remaining = response.headers.get("x-ratelimit-requests-remaining", "?")
         logger.info(f"Requests restantes hoje: {remaining}")
 
+        time.sleep(7)  # máx ~8 req/min — plano gratuito permite 10/min
         return data
 
     def get_standings(self, league_id: int, season: int) -> dict:

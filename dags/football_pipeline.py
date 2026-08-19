@@ -11,8 +11,24 @@ from ingestion.endpoints.fixtures import ingest_all_fixtures
 from ingestion.endpoints.standings import ingest_all_standings
 from ingestion.endpoints.players import ingest_all_top_scorers
 
-# Temporada atual
-SEASON = 2024
+CURRENT_SEASON = 2024
+SEASONS = [2022, 2023, 2024]
+
+
+def run_ingest_fixtures(**_):
+    for season in SEASONS:
+        ingest_all_fixtures(season, current_season=CURRENT_SEASON)
+
+
+def run_ingest_standings(**_):
+    for season in SEASONS:
+        ingest_all_standings(season, current_season=CURRENT_SEASON)
+
+
+def run_ingest_top_scorers(**_):
+    for season in SEASONS:
+        ingest_all_top_scorers(season, current_season=CURRENT_SEASON)
+
 
 default_args = {
     "owner": "football-etl",
@@ -35,20 +51,17 @@ with DAG(
     # ── INGESTÃO (Bronze) ──────────────────────────────────────────────────
     ingest_fixtures = PythonOperator(
         task_id="ingest_fixtures",
-        python_callable=ingest_all_fixtures,
-        op_kwargs={"season": SEASON},
+        python_callable=run_ingest_fixtures,
     )
 
     ingest_standings = PythonOperator(
         task_id="ingest_standings",
-        python_callable=ingest_all_standings,
-        op_kwargs={"season": SEASON},
+        python_callable=run_ingest_standings,
     )
 
     ingest_players = PythonOperator(
         task_id="ingest_top_scorers",
-        python_callable=ingest_all_top_scorers,
-        op_kwargs={"season": SEASON},
+        python_callable=run_ingest_top_scorers,
     )
 
     # ── TRANSFORMAÇÃO (Silver → Gold via dbt) ────────────────────────────
