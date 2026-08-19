@@ -32,8 +32,14 @@ def ingest_fixtures(league_name: str, league_id: int, season: int):
     logger.success(f"Jogos guardados em bronze: {len(rows)} registos")
 
 
-def ingest_all_fixtures(season: int):
-    """Ingere jogos para todas as ligas configuradas."""
+def ingest_all_fixtures(season: int, current_season: int = 2024):
+    """Ingere jogos para todas as ligas configuradas.
+    Épocas históricas (< current_season) são saltadas se já existirem na bronze."""
     client = FootballAPIClient()
+    db = DatabaseManager()
     for league_name, league_id in client.LEAGUES.items():
+        if season < current_season and db.has_data("raw_fixtures", league_name, season):
+            logger.info(f"Dados já existem para {league_name} {season} — a saltar")
+            continue
         ingest_fixtures(league_name, league_id, season)
+    db.close()
