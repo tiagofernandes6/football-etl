@@ -5,9 +5,9 @@ Pipeline de dados para ingestão e análise da **Premier League** e **Liga Portu
 ## 🏗️ Arquitetura
 
 ```
-API-Football → Bronze (raw JSON) → Silver (limpo) → Gold (agregado)
+API-Football → Bronze (raw JSON) → Silver (limpo) → Gold (agregado) → Streamlit
                     └─────────── Airflow orquestra ──────────────┘
-                                      └── Great Expectations valida
+                                      └── validações de qualidade
 ```
 
 ## 🛠️ Stack
@@ -18,7 +18,8 @@ API-Football → Bronze (raw JSON) → Silver (limpo) → Gold (agregado)
 | Armazenamento | DuckDB |
 | Transformação | dbt |
 | Orquestração | Apache Airflow |
-| Qualidade | Great Expectations |
+| Qualidade | Validações SQL sobre o DuckDB |
+| Dashboard | Streamlit + Plotly |
 | Ambiente | Docker |
 
 ## 🚀 Como correr
@@ -56,6 +57,15 @@ cd dbt_project && dbt run --profiles-dir .
 python -m expectations.run_checks
 ```
 
+### 5. Dashboard
+
+```bash
+streamlit run app.py
+```
+
+Abre em **http://localhost:8501**. Lê o DuckDB indicado por `DUCKDB_PATH`, por isso
+precisa que a pipeline tenha corrido pelo menos uma vez.
+
 ## 📊 Camadas de dados
 
 ### Bronze
@@ -86,6 +96,7 @@ Dados agregados prontos para análise.
 
 ```
 football-etl/
+├── app.py                   # Dashboard Streamlit
 ├── dags/                    # DAGs do Airflow
 ├── ingestion/               # Cliente e endpoints da API
 ├── storage/                 # Gestão do DuckDB

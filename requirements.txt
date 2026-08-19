@@ -3,18 +3,23 @@ requests==2.31.0
 python-dotenv==1.0.0
 
 # Storage
-duckdb==0.10.0
+duckdb==1.5.3
 
 # Transformation
-dbt-core==1.7.0
-dbt-duckdb==1.7.0
+dbt-core==1.8.0
+dbt-duckdb==1.8.0
+
+# Dashboard
+streamlit>=1.30
+plotly>=5.18
 
 # Quality
-great-expectations==0.18.0
+# As validações são SQL direto ao DuckDB (expectations/run_checks.py),
+# não usam Great Expectations.
 
 # Airflow (installed separately via Docker)
 # apache-airflow==2.8.0
 
 # Utils
 pandas==2.2.0
-loguru==0.7.2
+loguru==0.7.3
